@@ -35,10 +35,13 @@ resource "aws_instance" "flask-web" {
 #!/usr/bin/env bash
 export EC2_HOME=/opt/aws/apitools/ec2
 export PATH=$PATH:$EC2_HOME/bin
+echo "FLASK_APP=routes" >> /etc/environment
+echo "FLASK_ENVIRONMENT=production" >> /etc/environment
+echo "export FLASK_APP=routes" >> /etc/bashrc
+echo "export FLASK_ENVIRONMENT=production" >> /etc/bashrc
 yum update -y
 yum -y install jq pip3
-pip3 install flask click
-shutdown -r now
+pip3 install flask click Flask-Migrate Flask-SQLAlchemy hashids config
 EOF
 }
 
@@ -58,6 +61,20 @@ resource "aws_security_group" "default" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
+    cidr_blocks = local.home
+  }
+
+  ingress {
+    from_port = 5000
+    protocol = "tcp"
+    to_port = 5000
+    cidr_blocks = local.home
+  }
+
+  ingress {
+    from_port = -1
+    protocol = "ICMP"
+    to_port = -1
     cidr_blocks = local.home
   }
    egress {

@@ -1,0 +1,64 @@
+---
+- name: Python and Flask install
+  hosts: flask
+  become: yes
+
+  tasks:
+    - name: Create base and subdirs
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+      loop:
+        - /opt/url-shortener
+        - /opt/url-shortener/app
+        - /opt/url-shortener/app/templates
+
+    - name: Install base html template
+      copy:
+        src: /Users/mcoombs/repos/mcoombs2027/url-shortener/app/templates/base.html
+        dest: /opt/url-shortener/app/templates/base.html
+
+    - name: Install index.html
+      copy:
+        src: /Users/mcoombs/repos/mcoombs2027/url-shortener/app/templates/index.html
+        dest: /opt/url-shortener/app/templates/index.html
+
+    - name: Install python scripts
+      copy:
+        dest: /opt/url-shortener/app/
+        src: "{{ item }}"
+        owner: root
+        group: root
+        mode: 0755
+      loop:
+        - /Users/mcoombs/repos/mcoombs2027/url-shortener/app/__init__.py
+        - /Users/mcoombs/repos/mcoombs2027/url-shortener/app/config.py
+        - /Users/mcoombs/repos/mcoombs2027/url-shortener/app/models.py
+        - /Users/mcoombs/repos/mcoombs2027/url-shortener/app/routes.py
+
+    - name: Install main
+      copy:
+        dest: /opt/url-shortener/
+        src: /Users/mcoombs/repos/mcoombs2027/url-shortener/main.py
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Init python main
+      command: python3 main.py
+      args:
+        chdir: /opt/url-shortener
+
+    - name: Init Flask db
+      command: "{{ item }}"
+      args:
+        chdir: /opt/url-shortener/app
+      loop:
+      - flask db init
+      - flask db migrate
+      - flask db upgrade
+
+
