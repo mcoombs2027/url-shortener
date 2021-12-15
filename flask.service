@@ -1,0 +1,14 @@
+[Unit]
+Description=FLask URL Shortener service
+
+Wants=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/opt/url-shortener/app/flaskinit.sh
+Restart=on-failure
+RestartSec=10
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target

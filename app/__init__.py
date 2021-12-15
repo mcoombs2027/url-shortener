@@ -8,6 +8,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////opt/url-shortener/test.db'
 app.config.from_object(Config)
 app.config['SESSION_TYPE'] = 'filesystem'
+app.secret_key = 'mysupersecretkey'
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
