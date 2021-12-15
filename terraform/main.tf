@@ -22,6 +22,7 @@ resource "aws_instance" "flask-web" {
   instance_type = var.instance_type
   security_groups = [aws_security_group.default.name]
   key_name = var.ec2_keypair
+  iam_instance_profile = "${aws_iam_instance_profile.url-shortener-profile.name}"
   root_block_device {
     volume_type = "gp3"
     volume_size = "16"
@@ -35,13 +36,27 @@ resource "aws_instance" "flask-web" {
 #!/usr/bin/env bash
 export EC2_HOME=/opt/aws/apitools/ec2
 export PATH=$PATH:$EC2_HOME/bin
-echo "FLASK_APP=routes" >> /etc/environment
-echo "FLASK_ENVIRONMENT=production" >> /etc/environment
 echo "export FLASK_APP=routes" >> /etc/bashrc
 echo "export FLASK_ENVIRONMENT=production" >> /etc/bashrc
 yum update -y
 yum -y install jq pip3
+ec2_reg=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | jq -c -r .region)
+mkdir -p /opt/url-shortener/app
+aws --region $ec2_reg s3 cp s3://${var.bucket}/main.py /opt/url-shortener/
+aws --region $ec2_reg s3 cp s3://${var.bucket}/app/ /opt/url-shortener/app/ --recursive
+aws --region $ec2_reg s3 cp s3://${var.bucket}/app/templates/ /opt/url-shortener/app/templates/ --recursive
+aws --region $ec2_reg s3 cp s3://${var.bucket}/flask.service /usr/lib/systemd/system/
 pip3 install flask click Flask-Migrate Flask-SQLAlchemy hashids config
+source /etc/bashrc
+cd /opt/url-shortener/app
+chmod 755 *.py *.sh
+flask db init
+flask db migrate
+flask db upgrade
+ln -s /usr/lib/systemd/system/flask.service /etc/systemd/system/multi-user.target.wants/
+systemctl daemon-reload
+systemctl enable flask.service
+systemctl start flask
 EOF
 }
 
@@ -88,6 +103,59 @@ resource "aws_security_group" "default" {
     Name      = "${var.name}-sg"
   }
 
+}
 
+resource "aws_iam_role" "url-shortener" {
+  name        = "${var.name}"
+  description = "${var.name} instance role"
 
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_instance_profile" "url-shortener-profile" {
+  name = "${var.name}"
+  role = "${aws_iam_role.url-shortener.name}"
+}
+
+resource "aws_iam_policy" "url-shortener-bucket-readonly" {
+  name = "${var.name}-url-shortener-bucket-readonly"
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1425916919000",
+            "Effect": "Allow",
+            "Action": [
+                "s3:List*",
+                "s3:Get*"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${var.bucket}",
+                "arn:aws:s3:::${var.bucket}/*"
+            ]
+        }
+    ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "url-shortener-bucket-readonly" {
+  role       = "${aws_iam_role.url-shortener.name}"
+  policy_arn = "${aws_iam_policy.url-shortener-bucket-readonly.arn}"
 }
