@@ -58,16 +58,6 @@ jobs:
         run: |
           docker load --input /tmp/url-shortener.tar
 
-      - name: Start Docker
-        run: |
-          make start-docker
-          make service-up
-        env:
-          IS_PR_WORKFLOW: true
-
-      - name: Stop Docker
-        if: ${{ always() }}
-        run: make stop-docker
   scan-code:
     runs-on: ubuntu-latest
     steps:
@@ -78,10 +68,10 @@ jobs:
         with:
           node-version: 18.x
 
-      - name: Security Scan
+      - name: Yarn Security Scan
         run: yarn audit --audit-level=high
 
-  scan-container:
+  scan-container-iac:
     runs-on: ubuntu-latest
     needs:
       - build-docker-image
@@ -106,3 +96,13 @@ jobs:
           ignore-unfixed: true
           vuln-type: "os,library"
           severity: "CRITICAL,HIGH"
+
+      - name: IaC Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          format: "table"
+          exit-code: "1"
+          scan-type: "config"
+          ignore-unfixed: true
+          severity: "CRITICAL,HIGH"
+          exit-code: "1"
