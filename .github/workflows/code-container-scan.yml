@@ -104,4 +104,4 @@ jobs:
           exit-code: "1"
           scan-type: "config"
           ignore-unfixed: true
-          severity: "CRITICAL,HIGH"
+          severity: "CRITICAL,HIGH,MEDIUM,LOW"
