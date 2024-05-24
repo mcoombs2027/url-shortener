@@ -58,8 +58,6 @@ jobs:
         # Use || true to not fail the pipeline
       - name: Snyk Code test
         run:  snyk code test --report # || true
-        with:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         continue-on-error: true
         #SNYK_TOKEN: ${{ vars.SNYK_TOKEN }}
 
