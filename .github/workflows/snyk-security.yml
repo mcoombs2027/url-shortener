@@ -58,7 +58,7 @@ jobs:
         # Runs Snyk Code (SAST) analysis and uploads result into GitHub.
         # Use || true to not fail the pipeline
       - name: Snyk Code test
-        run:  SNYK_TOKEN=75c00c03-bcb2-47fa-ae70-8cb1558f660f  snyk code test --report # || true
+        run:  SNYK_TOKEN=75c00c03-bcb2-47fa-ae70-8cb1558f660f  snyk code test # || true
         continue-on-error: true
         #SNYK_TOKEN: ${{ vars.SNYK_TOKEN }}
 
@@ -66,13 +66,13 @@ jobs:
 
         # Runs Snyk Open Source (SCA) analysis and uploads result to Snyk.
       - name: Snyk Open Source monitor
-        run: snyk monitor --all-projects
+        run: SNYK_TOKEN=75c00c03-bcb2-47fa-ae70-8cb1558f660f snyk monitor --all-projects
         #SNYK_TOKEN: ${{ vars.SNYK_TOKEN }}
 
         # Runs Snyk Infrastructure as Code (IaC) analysis and uploads result to Snyk.
         # Use || true to not fail the pipeline.
       - name: Snyk IaC test and report
-        run: snyk iac test --report # || true
+        run: SNYK_TOKEN=75c00c03-bcb2-47fa-ae70-8cb1558f660f snyk iac test --report # || true
         #SNYK_TOKEN: ${{ vars.SNYK_TOKEN }}
 
         # Build the docker image for testing
