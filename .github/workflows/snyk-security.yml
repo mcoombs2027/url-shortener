@@ -61,15 +61,15 @@ jobs:
 
         # Runs Snyk Code (SAST) analysis and uploads result into GitHub.
         # Use || true to not fail the pipeline
-      ##- name: Snyk Code test
-        ##run:  snyk code test -d  # || true
-        ##continue-on-error: true
+      - name: Snyk Code test
+        run:  snyk code test -d  # || true
+        continue-on-error: true
         ##SNYK_TOKEN: ${{ vars.SNYK_TOKEN }}
 
-      - name: Echo secrets
-        run: |
-          echo "The github secret is: "
-          echo ${{ secrets.SNYK_TOKEN }}
+      #- name: Echo secrets
+        #run: |
+         # echo "The github secret is: "
+         # echo ${{ secrets.SNYK_TOKEN }}
           
 
 
