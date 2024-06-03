@@ -58,7 +58,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --severity-threshold=high --workdir $GITHUB_PROJECT/app
+          args: --severity-threshold=high --all-projects --exclude=docs --command=python3 --report
 
         
       #- name: Snyk IaC test and report
