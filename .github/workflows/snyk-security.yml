@@ -50,21 +50,15 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         #with:
           #args: --severity-threshold=high
-
-        # Runs Snyk Code (SAST) analysis and uploads result into GitHub.
-        # Use || true to not fail the pipeline
-      #- name: Snyk Code test
-        #run:  snyk code test -d  # || true
-        #continue-on-error: true
       
       - uses: actions/checkout@master
-      - name: Snyk scan and monitor for vulnerabilities
-        uses: snyk/actions/node@master
+      - name: Python Snyk scan
+        uses: snyk/actions/python@master
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          command: monitor
+          args: --severity-threshold=high
 
         
       #- name: Snyk IaC test and report
