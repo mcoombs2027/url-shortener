@@ -58,7 +58,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --severity-threshold=high --workdir .
+          args: --severity-threshold=high --workdir /home/runner/work/url-shortener/url-shortener/app
 
         
       #- name: Snyk IaC test and report
