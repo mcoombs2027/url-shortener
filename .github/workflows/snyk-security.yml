@@ -69,12 +69,12 @@ jobs:
         with:
           sarif: true
           image: psq-docker-scan
-          args: --file=Dockerfile --sarif-file-output=snyk-container-output.sarif
+          args: --file=Dockerfile 
 
-      - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-            sarif_file: snyk-container-output.sarif
+      #- name: Upload result to GitHub Code Scanning
+        #uses: github/codeql-action/upload-sarif@v3
+        #with:
+            #sarif_file: snyk-container-output.sarif
       
 
         # Push the Snyk Code results into GitHub Code Scanning tab
