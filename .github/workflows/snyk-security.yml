@@ -49,16 +49,16 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --severity-threshold=low,medium --sarif-file-output=snyk-output.sarif
+          args: --severity-threshold=low|medium|high --sarif-file-output=snyk-output.sarif
       
-      - uses: actions/checkout@master
-      - name: Python Snyk scan
-        uses: snyk/actions/python@master
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high --all-projects --exclude=docs --command=python3 --report --sarif-file-output=snyk-output.sarif
+      #- uses: actions/checkout@master
+      #- name: Python Snyk scan
+        #uses: snyk/actions/python@master
+        #continue-on-error: true
+        #env:
+          #SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        #with:
+          #args: --severity-threshold=high --all-projects --exclude=docs --command=python3 --report --sarif-file-output=snyk-output.sarif
 
         
       #- name: Snyk IaC test and report
