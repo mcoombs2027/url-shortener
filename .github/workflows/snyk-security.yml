@@ -67,7 +67,6 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          file: .
           sarif: true
           image: psq-docker-scan
           args: --file=Dockerfile --sarif-file-output=snyk-container-output.sarif
