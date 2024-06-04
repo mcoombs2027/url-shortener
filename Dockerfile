@@ -1,23 +1,26 @@
-ARG node_version=18
-ARG node_image=node:${node_version}-alpine
+FROM node:20-alpine AS base
 
-FROM $node_image as builder
+# Setup env variabless for yarn and nextjs
+# https://nextjs.org/telemetry
+ENV NEXT_TELEMETRY_DISABLED=1 NODE_ENV=production YARN_VERSION=4.2.1
 
-RUN mkdir /app
+RUN apk update && apk upgrade && apk add --no-cache libc6-compat
 
-WORKDIR /app
+# install and use yarn 4.x
+RUN corepack enable && corepack prepare yarn@${YARN_VERSION}
 
-RUN yarn install --frozen-lockfile --no-progress --ignore-scripts
 
-RUN yarn build
 
-# ---------------
+# Installing all the dependencies
+# We clean up dependency size via Next's standalone build mode
+# https://nextjs.org/docs/app/api-reference/next-config-js/output
+RUN yarn install --immutable
 
-FROM $node_image
 
-RUN apk update && apk upgrade
-RUN npm uninstall npm -g
 
-WORKDIR /app/
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
 
-CMD yarn start
+
+USER nextjs
+
