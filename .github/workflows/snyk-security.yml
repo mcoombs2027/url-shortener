@@ -63,4 +63,3 @@ jobs:
         with:
           image: psq-docker-scan
           args: --file=Dockerfile
-          options: --user root
