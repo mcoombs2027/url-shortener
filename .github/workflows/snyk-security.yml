@@ -41,7 +41,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --severity-threshold=low --sarif-file-output=snyk-output.sarif --report
+          args: --severity-threshold=low --sarif-file-output=snyk-output.sarif --report -d
 
           # Push the Snyk Code results into GitHub Code Scanning tab
       - name: Upload result to GitHub Code Scanning
@@ -62,4 +62,4 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: psq-docker-scan
-          args: --file=Dockerfile
+          args: --file=Dockerfile -d 
